@@ -5,7 +5,11 @@ from tensorflow.keras.preprocessing.sequence import pad_sequences
 import pickle
 import numpy as np
 import joblib
+import random
+from ytmusicapi import YTMusic
 
+# Initialize YTMusic
+ytmusic = YTMusic()
 app = FastAPI()
 
 # Load the saved model
@@ -25,7 +29,27 @@ class TextInput(BaseModel):
     text: str
 
 
+def get_recommendations(sentiment):
+    if sentiment == 'positive':
+        genre = 'pop'
+    elif sentiment == 'negative':
+        genre = 'sad'
+    else:
+        genre = 'classical'
+
+    results = ytmusic.search(genre, filter="songs")
+
+    random.shuffle(results)
+
+    recommendations = []
+    for song in results[:5]:
+        title = song['title']
+        artists = ", ".join(artist['name'] for artist in song['artists'])
+        recommendations.append(f"{title} by {artists}")
+    return recommendations
 # Preprocess input text
+
+
 def preprocess_input_text(text):
     # Convert text to lowercase
     text = text.lower()
@@ -49,13 +73,14 @@ async def predict(input_data: TextInput):
         prediction = model.predict(processed_text)
         predicted_label = np.argmax(prediction, axis=1)[0]
         predicted_sentiment = label_mapping[predicted_label]
-
+        recommendations = get_recommendations(predicted_sentiment)
         # Return the result as JSON
         return {
             "text": text,
             "sentiment": predicted_sentiment,
             # Include confidence scores for all classes
-            "confidence": prediction[0].tolist()
+            "confidence": prediction[0].tolist(),
+            "recommendations": recommendations
         }
 
     except Exception as e:
