@@ -33,3 +33,5 @@ This project implements a mood-based music recommendation system using sentiment
 3. **Enhance Output Interface**: Replace the LCD with a mobile/web dashboard for displaying richer media content like album covers, audio previews, and playlist controls.
 
 [Project Report (Google Docs)](https://docs.google.com/document/d/11nHCWvqMKL-_JNvWQ2UFADc0I4EKkoSAPQggzxWVBUQ/edit?usp=sharing)
+
+[Demo Video](https://youtu.be/c372G6jbmL4)
